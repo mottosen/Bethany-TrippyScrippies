@@ -74,14 +74,14 @@ Usage: ([..] is optional)
         -save                   => whether to save the plot, default=show
 
     unit specifier:
-        milli, micro
+        femto, pico, nano, micro, milli, molar
 
 
 
     example use:
-        curve_plotter.py -save -unit "milli" -cut 5 -title "EnzymeXYZ plotted for DATA"
+        curve_plotter.py -save -unit "milli" -cut 5 -title "EnzymeXYZ plotted for DATA" MichaelisMenten
 
-        This will save a created plot (based on 5 lines of data), with the specified title, using milli moles as unit.
+        This will save a created Michaelis-Menton plot (based on 5 lines of data), with the specified title, using milli moles as unit.
 """
 
     def _parseArguments(self, args):
