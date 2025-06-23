@@ -21,6 +21,7 @@ class Config:
         self._unit = UtilityUnit.Micro
         self._extinction_coefficient = 0.021
         self._time_coefficient = 95 / 60
+        self._read_lines = None
         self._save_fig = False
         self._plotter = None
         self._title = "Title Not Specified"
@@ -45,6 +46,9 @@ class Config:
     def GetTimeCoefficient(self):
         return self._time_coefficient
 
+    def GetReadLines(self):
+        return self._read_lines
+
     def GetSaveMode(self):
         return self._save_fig
 
@@ -66,6 +70,7 @@ Usage: ([..] is optional)
     options:
         -unit <unit specifier>  => the unit used, default=micro
         -title <plot title>     => the title of plot being created
+        -cut <lines>            => the amount of lines to read from data, defeault=full file
         -save                   => whether to save the plot, default=show
 
     unit specifier:
@@ -74,9 +79,9 @@ Usage: ([..] is optional)
 
 
     example use:
-        curve_plotter.py -save -unit "milli" -title "EnzymeXYZ plotted for DATA"
+        curve_plotter.py -save -unit "milli" -cut 5 -title "EnzymeXYZ plotted for DATA"
 
-        this will save a created plot, with the specified title, using milli moles as unit.
+        This will save a created plot (based on 5 lines of data), with the specified title, using milli moles as unit.
 """
 
     def _parseArguments(self, args):
@@ -97,6 +102,10 @@ Usage: ([..] is optional)
 
                 case "-title":
                     self._title = options[i + 1]
+                    i += 2
+
+                case "-cut":
+                    self._read_lines = int(options[i + 1])
                     i += 2
 
                 case _:
@@ -151,6 +160,9 @@ class DataReader:
 
         # read data and compute initial velocity
         df = pd.read_csv(file_path, header=None)
+        if not config.GetReadLines() == None:
+            df = df.head(config.GetReadLines())
+
         reduction_cytochromeC = df.apply(self._handle_column, axis=0)
 
         return Unit(concentration), reduction_cytochromeC
