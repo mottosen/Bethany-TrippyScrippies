@@ -46,7 +46,7 @@ class MichaelisMenten:
             f"Kcat/Km: {np.mean(kcat_km):.4f} ± {compute_standard_error(kcat_km):.4f}"
         )
 
-    def make_plot(self, data, res_dir, title, save):
+    def make_plot(self, data, res_dir, title, save, logarithmic):
         # split data into concentrations and velocities
         substrate_concentrations = np.array(list(data.keys()))
         initial_velocities = np.array(list(data.values()))
@@ -91,7 +91,9 @@ class MichaelisMenten:
         plt.title(title)
         # plt.legend()
         plt.grid(True)
-        plt.xscale("log")
+
+        if logarithmic:
+            plt.xscale("log")
 
         if save:
             plt.savefig(res_dir / "MichaelisMenten.png")

@@ -25,6 +25,7 @@ class Config:
         self._time_coefficient = 95 / 60
         self._read_lines = None
         self._save_fig = False
+        self._log_scale = False
         self._plotter = None
         self._title = "Title Not Specified"
 
@@ -54,6 +55,9 @@ class Config:
     def GetSaveMode(self):
         return self._save_fig
 
+    def GetLogMode(self):
+        return self._log_scale
+
     def GetPlotter(self):
         return self._plotter
 
@@ -63,25 +67,24 @@ class Config:
     @staticmethod
     def GetHelpText():
         return """
-Usage: ([..] is optional)
-    curve_plotter.py [options] action
+Usage:
+    curve_plotter.py [options] <action>
 
     action:
         MichaelisMenten
 
     options:
-        -unit <unit specifier>  => the unit used, default=micro
-        -title <plot title>     => the title of plot being created
-        -cut <lines>            => the amount of lines to read from data, defeault=full file
-        -save                   => whether to save the plot, default=show
+        -u | --unit  <unit specifier>   => the unit used, default=micro
+        -t | --title <plot title>       => the title of plot being created
+        -c | --cut   <lines>            => the amount of lines to read from data, defeault=full file
+        -l | --logarithmic              => set x-axis to logarithmic scale
+        -s | --save                     => whether to save the plot, default=show
 
     unit specifier:
         femto, pico, nano, micro, milli, molar
 
-
-
     example use:
-        curve_plotter.py -save -unit "milli" -cut 5 -title "EnzymeXYZ plotted for DATA" MichaelisMenten
+        curve_plotter.py --save --unit "milli" --cut 5 --title "EnzymeXYZ plotted for DATA" --logarithmic MichaelisMenten
 
         This will save a created Michaelis-Menton plot (based on 5 lines of data), with the specified title, using milli moles as unit.
 """
@@ -94,21 +97,25 @@ Usage: ([..] is optional)
 
         while i < lim:
             match options[i]:
-                case "-save":
+                case "--save" | "-s":
                     self._save_fig = True
                     i += 1
 
-                case "-unit":
+                case "--unit" | "-u":
                     self._unit = UtilityUnit.from_text(options[i + 1])
                     i += 2
 
-                case "-title":
+                case "--title" | "-t":
                     self._title = options[i + 1]
                     i += 2
 
-                case "-cut":
+                case "--cut" | "-c":
                     self._read_lines = int(options[i + 1])
                     i += 2
+
+                case "--logarithmic" | "-l":
+                    self._log_scale = True
+                    i += 1
 
                 case _:
                     raise Exception("Could not decide on option.")
@@ -189,5 +196,9 @@ if __name__ == "__main__":
 
     plotter = config.GetPlotter()
     plotter.make_plot(
-        data, config.GetResultsDir(), config.GetPlotTitle(), config.GetSaveMode()
+        data,
+        config.GetResultsDir(),
+        config.GetPlotTitle(),
+        config.GetSaveMode(),
+        config.GetLogMode(),
     )
