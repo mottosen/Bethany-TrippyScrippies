@@ -91,6 +91,7 @@ class MichaelisMenten:
         plt.title(title)
         # plt.legend()
         plt.grid(True)
+        plt.xscale("log")
 
         if save:
             plt.savefig(res_dir / "MichaelisMenten.png")
